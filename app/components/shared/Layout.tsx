@@ -5,16 +5,12 @@ const Layout = ({ children }: any) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
   return (
-    <main
-      className={`${
-        isDarkMode ? "dark bg-gray-900" : "bg-gray-50"
-      }h-[100vh] flex flex-col`}
-    >
+    <main className={`${" bg-gray-900"} flex flex-col`}>
       <Header
         isDarkMode={isDarkMode}
         toggleTheme={toggleTheme}
       />
-      <div className="flex-1 ">{children}</div>
+      <div className="flex-1 w-full ">{children}</div>
       <Footer />
     </main>
   );
