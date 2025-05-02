@@ -1,22 +1,58 @@
 import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
 import Layout from "~/components/shared/Layout";
-import { Calendar } from "lucide-react";
+import { Calendar, PlusIcon } from "lucide-react";
 import Card from "~/components/shared/Card";
 import { cardHeader } from "~/components/utlis/GlobalClasses";
 import { countStyles } from "~/components/utlis/CountStyles";
-
-export function meta({}: Route.MetaArgs) {
-  return [
-    // { title: "New React Router App" },
-    // {
-    //   name: "description",
-    //   content: "Welcome to React Router!",
-    // },
-  ];
+import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+interface HabitInterface {
+  id: string;
+  name: string;
+  completed: Boolean;
+  creactedAt: String;
+  completdDates: [];
+  streak: number;
 }
 
 export default function Home() {
+  const [habits, setHabits] = useState<
+    [] | HabitInterface[]
+  >([]);
+  const [habit, setHabit] = useState<HabitInterface>({
+    id: "",
+    name: "",
+    completed: false,
+    creactedAt: "",
+    completdDates: [],
+    streak: 0,
+  });
+
+  const handelAddHabit = () => {
+    // setHabit({
+    //   ...habit,
+    //   id:generateId()
+    // })
+    let newHabit = { ...habit };
+    newHabit.id = generateId();
+    newHabit.creactedAt = new Date().toISOString();
+    console.log(newHabit);
+    setHabits([newHabit, ...habits]);
+    setHabit({
+      id: "",
+      name: "",
+      completed: false,
+      creactedAt: "",
+      completdDates: [],
+      streak: 0,
+    });
+  };
+
+  function generateId() {
+    return uuidv4();
+  }
+
   return (
     <>
       <Layout>
@@ -59,7 +95,29 @@ export default function Home() {
               </label>
             </div>
 
-            <input name="myInput" />
+            <div className="flex mt-4">
+              <input
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-l-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 "
+                name="myInput"
+                placeholder="Add a new routine"
+                onChange={(e) =>
+                  setHabit({
+                    ...habit,
+                    name: e.target.value,
+                  })
+                }
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") handelAddHabit();
+                }}
+                value={habit.name}
+              />
+              <button
+                onClick={() => handelAddHabit()}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-r-lg"
+              >
+                <PlusIcon size={18} />
+              </button>
+            </div>
           </Card>
           <Card>
             <p className={`${cardHeader}`}>Daliy Goals</p>
