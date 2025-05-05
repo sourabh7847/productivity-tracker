@@ -1,7 +1,12 @@
 import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
 import Layout from "~/components/shared/Layout";
-import { Calendar, PlusIcon } from "lucide-react";
+import {
+  Calendar,
+  Pencil,
+  PlusIcon,
+  Trash2,
+} from "lucide-react";
 import Card from "~/components/shared/Card";
 import { cardHeader } from "~/components/utlis/GlobalClasses";
 import { countStyles } from "~/components/utlis/CountStyles";
@@ -86,13 +91,43 @@ export default function Home() {
               <p className={`${cardHeader} `}>
                 Daliy Routines
               </p>
-              <p className={`${countStyles}`}>0/4</p>
+              <p className={`${countStyles}`}>
+                {
+                  habits.filter(
+                    (item: HabitInterface) =>
+                      item.completed == true
+                  ).length
+                }
+                /{habits.length}
+              </p>
             </div>
-            <div className="flex items-center mt-5">
-              <button className="w-5 h-5 mr-3 rounded-full border"></button>
-              <label className="text-gray-200 text-lg">
-                Morning Meditation
-              </label>
+            <div className="flex flex-col items-start mt-5">
+              {habits.length == 0 ? (
+                <p className=" text-gray-100 text-lg p-2">
+                  No Habits found !
+                </p>
+              ) : (
+                habits.map((habit) => {
+                  return (
+                    <div className="flex w-full p-2 rounded-lg hover:bg-gray-900 transition-colors">
+                      <div className="flex flex-1 items-center">
+                        <button className="w-5 h-5 mr-3 rounded-full border"></button>
+                        <label className=" text-gray-200 text-lg">
+                          {habit.name}
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <button className="mr-3 cursor-pointer">
+                          <Pencil size={15} />
+                        </button>
+                        <button className="cursor-pointer">
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
 
             <div className="flex mt-4">
