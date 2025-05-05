@@ -3,6 +3,7 @@ import { Welcome } from "../welcome/welcome";
 import Layout from "~/components/shared/Layout";
 import {
   Calendar,
+  Check,
   Pencil,
   PlusIcon,
   Trash2,
@@ -43,7 +44,7 @@ export default function Home() {
     newHabit.id = generateId();
     newHabit.creactedAt = new Date().toISOString();
     console.log(newHabit);
-    setHabits([newHabit, ...habits]);
+    setHabits([...habits, newHabit]);
     setHabit({
       id: "",
       name: "",
@@ -57,6 +58,18 @@ export default function Home() {
   function generateId() {
     return uuidv4();
   }
+  const onHabitClick = (habit: HabitInterface) => {
+    let newhabits = [...habits];
+    newhabits = newhabits.filter(
+      (item) => item.id != habit.id
+    );
+    let changedHabit = {
+      ...habit,
+      completed: !habit.completed,
+    };
+    newhabits = [...newhabits, changedHabit];
+    setHabits(newhabits);
+  };
 
   return (
     <>
@@ -111,8 +124,27 @@ export default function Home() {
                   return (
                     <div className="flex w-full p-2 rounded-lg hover:bg-gray-900 transition-colors">
                       <div className="flex flex-1 items-center">
-                        <button className="w-5 h-5 mr-3 rounded-full border"></button>
-                        <label className=" text-gray-200 text-lg">
+                        <button
+                          className={` flex items-center justify-center w-5 h-5 mr-3 rounded-full cursor-pointer ${
+                            habit.completed
+                              ? "bg-indigo-600 border-2"
+                              : "border"
+                          }`}
+                          onClick={() =>
+                            onHabitClick(habit)
+                          }
+                        >
+                          {habit.completed ? (
+                            <Check size={12} />
+                          ) : null}
+                        </button>
+                        <label
+                          className={` text-gray-200 text-lg ${
+                            habit.completed
+                              ? "line-through"
+                              : " "
+                          }`}
+                        >
                           {habit.name}
                         </label>
                       </div>
