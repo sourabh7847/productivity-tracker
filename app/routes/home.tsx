@@ -71,6 +71,14 @@ export default function Home() {
     setHabits(newhabits);
   };
 
+  const onHabitDelete = (habit: HabitInterface) => {
+    let deleteHabits = habits.filter(
+      (item) => item.id != habit.id
+    );
+    setHabits(deleteHabits);
+    // console.log(habit);
+  };
+
   return (
     <>
       <Layout>
@@ -152,7 +160,12 @@ export default function Home() {
                         <button className="mr-3 cursor-pointer">
                           <Pencil size={15} />
                         </button>
-                        <button className="cursor-pointer">
+                        <button
+                          className="cursor-pointer"
+                          onClick={() =>
+                            onHabitDelete(habit)
+                          }
+                        >
                           <Trash2 size={18} />
                         </button>
                       </div>
