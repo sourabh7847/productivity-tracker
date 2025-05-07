@@ -1,5 +1,3 @@
-import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
 import Layout from "~/components/shared/Layout";
 import {
   Calendar,
@@ -7,6 +5,7 @@ import {
   Pencil,
   PlusIcon,
   Trash2,
+  X,
 } from "lucide-react";
 import Card from "~/components/shared/Card";
 import { cardHeader } from "~/components/utlis/GlobalClasses";
@@ -35,6 +34,9 @@ export default function Home() {
     streak: 0,
   });
 
+  const [editingHabit, setEditingHabit] =
+    useState<HabitInterface | null>(null);
+
   const handelAddHabit = () => {
     // setHabit({
     //   ...habit,
@@ -43,7 +45,6 @@ export default function Home() {
     let newHabit = { ...habit };
     newHabit.id = generateId();
     newHabit.creactedAt = new Date().toISOString();
-    console.log(newHabit);
     setHabits([...habits, newHabit]);
     setHabit({
       id: "",
@@ -58,7 +59,7 @@ export default function Home() {
   function generateId() {
     return uuidv4();
   }
-  const onHabitClick = (habit: HabitInterface) => {
+  const handleHabitClick = (habit: HabitInterface) => {
     let newhabits = [...habits];
     newhabits = newhabits.filter(
       (item) => item.id != habit.id
@@ -71,12 +72,24 @@ export default function Home() {
     setHabits(newhabits);
   };
 
-  const onHabitDelete = (habit: HabitInterface) => {
-    let deleteHabits = habits.filter(
+  const handelHabitDelete = (habit: HabitInterface) => {
+    let remainingHabits = habits.filter(
       (item) => item.id != habit.id
     );
-    setHabits(deleteHabits);
-    // console.log(habit);
+    setHabits(remainingHabits);
+  };
+
+  const handleHabitEdit = (habit: HabitInterface) => {
+    setEditingHabit(habit);
+  };
+
+  const onEditSave = () => {
+    let newHabits: any = habits.filter(
+      (item) => editingHabit?.id != item.id
+    );
+    newHabits = [editingHabit, ...newHabits];
+    setHabits(newHabits);
+    setEditingHabit(null);
   };
 
   return (
@@ -129,48 +142,94 @@ export default function Home() {
                 </p>
               ) : (
                 habits.map((habit) => {
-                  return (
-                    <div className="flex w-full p-2 rounded-lg hover:bg-gray-900 transition-colors">
-                      <div className="flex flex-1 items-center">
-                        <button
-                          className={` flex items-center justify-center w-5 h-5 mr-3 rounded-full cursor-pointer ${
-                            habit.completed
-                              ? "bg-indigo-600 border-2"
-                              : "border"
-                          }`}
-                          onClick={() =>
-                            onHabitClick(habit)
+                  if (habit.id == editingHabit?.id) {
+                    return (
+                      <div className="flex items-center justify-between w-full">
+                        <input
+                          className="flex flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter")
+                              onEditSave();
+                          }}
+                          value={editingHabit.name}
+                          onChange={(e) =>
+                            setEditingHabit({
+                              ...editingHabit,
+                              name: e.target.value,
+                            })
                           }
-                        >
-                          {habit.completed ? (
-                            <Check size={12} />
-                          ) : null}
-                        </button>
-                        <label
-                          className={` text-gray-200 text-lg ${
-                            habit.completed
-                              ? "line-through"
-                              : " "
-                          }`}
-                        >
-                          {habit.name}
-                        </label>
+                        />
+                        <div className="flex items-center ml-2 space-x-2">
+                          <button
+                            onClick={onEditSave}
+                            title="Save"
+                            className="cursor-pointer"
+                          >
+                            <Check size={20} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              setEditingHabit(null)
+                            }
+                            title="Cancel"
+                            className="cursor-pointer"
+                          >
+                            <X size={20} />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <button className="mr-3 cursor-pointer">
-                          <Pencil size={15} />
-                        </button>
-                        <button
-                          className="cursor-pointer"
-                          onClick={() =>
-                            onHabitDelete(habit)
-                          }
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                    );
+                  } else {
+                    return (
+                      <div className="flex w-full p-2 rounded-lg hover:bg-gray-900 transition-colors">
+                        <div className="flex flex-1 items-center">
+                          <button
+                            className={` flex items-center justify-center w-5 h-5 mr-3 rounded-full cursor-pointer ${
+                              habit.completed
+                                ? "bg-indigo-600 border-2"
+                                : "border"
+                            }`}
+                            onClick={() =>
+                              handleHabitClick(habit)
+                            }
+                          >
+                            {habit.completed ? (
+                              <Check size={12} />
+                            ) : null}
+                          </button>
+                          <label
+                            className={` text-gray-200 text-lg ${
+                              habit.completed
+                                ? "line-through"
+                                : " "
+                            }`}
+                          >
+                            {habit.name}
+                          </label>
+                        </div>
+                        <div className="flex items-center">
+                          <button
+                            className="mr-3 cursor-pointer"
+                            onClick={() =>
+                              handleHabitEdit(habit)
+                            }
+                            title="Edit"
+                          >
+                            <Pencil size={15} />
+                          </button>
+                          <button
+                            className="cursor-pointer"
+                            onClick={() =>
+                              handelHabitDelete(habit)
+                            }
+                            title="Delete"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  );
+                    );
+                  }
                 })
               )}
             </div>
