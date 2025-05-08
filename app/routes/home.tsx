@@ -12,6 +12,7 @@ import { cardHeader } from "~/components/utlis/GlobalClasses";
 import { countStyles } from "~/components/utlis/CountStyles";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { format } from "date-fns";
 interface HabitInterface {
   id: string;
   name: string;
@@ -92,6 +93,42 @@ export default function Home() {
     setEditingHabit(null);
   };
 
+  const now = new Date();
+  const hour = now.getHours();
+  const getGreeting = () => {
+    if (hour < 12) return "Good Morning";
+    if (hour < 17) return "Good Afternoon";
+    if (hour < 21) return "Good Evening";
+    return "Good Night";
+  };
+
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const day = days[now.getDay()];
+  const date = `${months[now.getMonth()]} ${now.getDate()}`;
+
   return (
     <>
       <Layout>
@@ -99,17 +136,17 @@ export default function Home() {
           <div className="flex flex-row justify-between ">
             <div>
               <h1 className="font-bold text-2xl text-gray-100">
-                Good Morning
+                {getGreeting()}
               </h1>
               <div className="flex items-center py-1 text-gray-400">
-                <Calendar className="mr-2" size={18} />{" "}
+                <Calendar className="mr-2" size={18} />
                 <p
                   style={{
                     fontWeight: "400",
                     fontSize: "18px",
                   }}
                 >
-                  Saturday, April 26
+                  {day}, {date}
                 </p>
               </div>
             </div>
