@@ -10,9 +10,34 @@ import {
 import Card from "~/components/shared/Card";
 import { cardHeader } from "~/components/utlis/GlobalClasses";
 import { countStyles } from "~/components/utlis/CountStyles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
+
+const days = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 interface HabitInterface {
   id: string;
   name: string;
@@ -23,9 +48,12 @@ interface HabitInterface {
 }
 
 export default function Home() {
+  const habits_from_localstorage = JSON.parse(
+    localStorage.getItem("habits") || "[]"
+  );
   const [habits, setHabits] = useState<
     [] | HabitInterface[]
-  >([]);
+  >(habits_from_localstorage);
   const [habit, setHabit] = useState<HabitInterface>({
     id: "",
     name: "",
@@ -102,32 +130,13 @@ export default function Home() {
     return "Good Night";
   };
 
-  const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
   const day = days[now.getDay()];
   const date = `${months[now.getMonth()]} ${now.getDate()}`;
+
+  useEffect(() => {
+    console.log(habits);
+    localStorage.setItem("habits", JSON.stringify(habits));
+  }, [habits]);
 
   return (
     <>
