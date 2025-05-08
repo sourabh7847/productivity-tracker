@@ -4,5 +4,6 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  base: "/productivity-tracker/",
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
 });
