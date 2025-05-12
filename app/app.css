@@ -6,4 +6,8 @@ body {
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+
+  .MuiAutocomplete-noOptions {
+    color: white !important;
+  }
 }

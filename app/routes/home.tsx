@@ -13,6 +13,14 @@ import { countStyles } from "~/components/utlis/CountStyles";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import { Autocomplete, Paper } from "@mui/material";
 
 const days = [
   "Sunday",
@@ -47,6 +55,14 @@ interface HabitInterface {
   streak: number;
 }
 
+interface RoutineInterface {
+  id: string;
+  name: string;
+  isCompleted: boolean;
+  createdAt: string;
+  habits: HabitInterface[] | [];
+}
+
 export default function Home() {
   const habits_from_localstorage = JSON.parse(
     localStorage.getItem("habits") || "[]"
@@ -65,6 +81,17 @@ export default function Home() {
 
   const [editingHabit, setEditingHabit] =
     useState<HabitInterface | null>(null);
+
+  const [routines, setRoutines] = useState<
+    [] | RoutineInterface[]
+  >([]);
+  const [routine, setRoutine] = useState<RoutineInterface>({
+    id: "",
+    name: "",
+    isCompleted: false,
+    createdAt: "",
+    habits: [],
+  });
 
   const handelAddHabit = () => {
     // setHabit({
@@ -138,10 +165,20 @@ export default function Home() {
     localStorage.setItem("habits", JSON.stringify(habits));
   }, [habits]);
 
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <>
       <Layout>
-        <div className=" flex-1 flex flex-col px-25 pt-8 pb-6">
+        <div className="flex-1 flex flex-col px-25 pt-8 pb-6">
           <div className="flex flex-row justify-between ">
             <div>
               <h1 className="font-bold text-2xl text-gray-100">
@@ -305,7 +342,171 @@ export default function Home() {
             </div>
           </Card>
           <Card>
-            <p className={`${cardHeader}`}>Daliy Goals</p>
+            <div className="flex flex-row justify-between">
+              <div className=" flex  ">
+                <p className={`${cardHeader}`}>Routines</p>
+              </div>
+              <div>
+                <div
+                  className="px-3 py-1.5 rounded-lg bg-indigo-900/60 text-indigo-300 cursor-pointer shadow-lg"
+                  onClick={handleClickOpen}
+                >
+                  Add Routines
+                </div>
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  PaperProps={{
+                    component: "form",
+                    sx: {
+                      backgroundColor: "#101828",
+                      color: "#ffffff",
+                      minWidth: 600,
+                    },
+                    onSubmit: (
+                      event: React.FormEvent<HTMLFormElement>
+                    ) => {
+                      event.preventDefault();
+                      const formData = new FormData(
+                        event.currentTarget
+                      );
+                      const formJson = Object.fromEntries(
+                        formData.entries()
+                      );
+                      console.log(formJson);
+                      handleClose();
+                    },
+                  }}
+                >
+                  <DialogTitle sx={{ color: "#ffffff" }}>
+                    Add Routine
+                  </DialogTitle>
+
+                  <DialogContent>
+                    <TextField
+                      autoFocus
+                      required
+                      margin="dense"
+                      name="routine"
+                      label="Routine Name"
+                      fullWidth
+                      variant="standard"
+                      sx={{ marginBottom: 2 }}
+                      InputProps={{
+                        style: { color: "#ffffff" },
+                        disableUnderline: false,
+                        sx: {
+                          "&:before": {
+                            borderBottomColor: "#cccccc",
+                          },
+                          "&:hover:not(.Mui-disabled):before":
+                            {
+                              borderBottomColor: "#cccccc",
+                            },
+                          "&:after": {
+                            borderBottomColor: "#4f39f6e0",
+                          },
+                        },
+                      }}
+                      InputLabelProps={{
+                        style: { color: "#cccccc" },
+                      }}
+                    />
+
+                    <Autocomplete
+                      multiple
+                      id="habit-select"
+                      options={habits}
+                      getOptionLabel={(option) =>
+                        option.name
+                      }
+                      filterSelectedOptions={true}
+                      
+                      value={null}
+                      noOptionsText="No habits found"
+                      slotProps={{
+                        paper: {
+                          sx: {
+                            backgroundColor: "#101828",
+                            color: "#ffffff",
+                            boxShadow:
+                              "0px 4px 12px rgba(0, 0, 0, 0.5)",
+                            "& .MuiAutocomplete-option": {
+                              color: "#ffffff",
+                              '&[aria-selected="true"]': {
+                                backgroundColor:
+                                  "#4f39f6e0",
+                              },
+                              "&:hover": {
+                                backgroundColor: "#303F9F",
+                              },
+                            },
+                            "& .MuiListSubheader-root": {
+                              color: "#ffffff", // ✅ Fixes "No options" text color
+                              backgroundColor: "#101828", // match dropdown
+                            },
+                          },
+                        },
+                      }}
+                      sx={{
+                        "& .MuiAutocomplete-tag": {
+                          backgroundColor: "#4f39f6e0",
+                          color: "#ffffff",
+                        },
+                        "& .MuiSvgIcon-root": {
+                          color: "#ffffff",
+                        },
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          name="selectedHabits"
+                          label="Select Habits"
+                          placeholder="Start typing habit..."
+                          margin="normal"
+                          variant="standard"
+                          InputProps={{
+                            ...params.InputProps,
+                            style: { color: "#ffffff" },
+                            disableUnderline: false,
+                            sx: {
+                              "&:before": {
+                                borderBottomColor:
+                                  "#4f39f6e0",
+                              },
+                              "&:hover:not(.Mui-disabled):before":
+                                {
+                                  borderBottomColor:
+                                    "#4f39f6e0",
+                                },
+                              "&:after": {
+                                borderBottomColor:
+                                  "#4f39f6e0",
+                              },
+                            },
+                          }}
+                          InputLabelProps={{
+                            style: { color: "#cccccc" },
+                          }}
+                        />
+                      )}
+                    />
+                  </DialogContent>
+
+                  <DialogActions>
+                    <Button
+                      onClick={handleClose}
+                      sx={{ color: "#cccccc" }}
+                    >
+                      Cancel
+                    </Button>
+                    <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 h-[40px] w-[70px] rounded-lg">
+                      Save
+                    </button>
+                  </DialogActions>
+                </Dialog>
+              </div>
+            </div>
           </Card>
         </div>
       </Layout>
