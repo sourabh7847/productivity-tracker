@@ -421,8 +421,6 @@ export default function Home() {
                         option.name
                       }
                       filterSelectedOptions={true}
-                      
-                      value={null}
                       noOptionsText="No habits found"
                       slotProps={{
                         paper: {
