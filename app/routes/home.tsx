@@ -92,6 +92,8 @@ export default function Home() {
     createdAt: "",
     habits: [],
   });
+  const [selectedHabits, setSelectedHabits] =
+    useState<any>();
 
   const handelAddHabit = () => {
     // setHabit({
@@ -160,9 +162,18 @@ export default function Home() {
   const day = days[now.getDay()];
   const date = `${months[now.getMonth()]} ${now.getDate()}`;
 
+  const [habitsAsOptions, setHabitsAsOptions] =
+    useState<any>([]);
   useEffect(() => {
-    console.log(habits);
     localStorage.setItem("habits", JSON.stringify(habits));
+    let options = habits.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+      };
+    });
+
+    setHabitsAsOptions(options);
   }, [habits]);
 
   const [open, setOpen] = useState(false);
@@ -412,49 +423,24 @@ export default function Home() {
                         style: { color: "#cccccc" },
                       }}
                     />
-
                     <Autocomplete
                       multiple
                       id="habit-select"
-                      options={habits}
+                      options={habitsAsOptions?.filter(
+                        (option: any) =>
+                          !selectedHabits?.some(
+                            (sel: any) =>
+                              sel.id === option.id
+                          )
+                      )}
+                      value={selectedHabits}
+                      onChange={(e, newValue) =>
+                        setSelectedHabits(newValue)
+                      }
                       getOptionLabel={(option) =>
                         option.name
                       }
-                      filterSelectedOptions={true}
                       noOptionsText="No habits found"
-                      slotProps={{
-                        paper: {
-                          sx: {
-                            backgroundColor: "#101828",
-                            color: "#ffffff",
-                            boxShadow:
-                              "0px 4px 12px rgba(0, 0, 0, 0.5)",
-                            "& .MuiAutocomplete-option": {
-                              color: "#ffffff",
-                              '&[aria-selected="true"]': {
-                                backgroundColor:
-                                  "#4f39f6e0",
-                              },
-                              "&:hover": {
-                                backgroundColor: "#303F9F",
-                              },
-                            },
-                            "& .MuiListSubheader-root": {
-                              color: "#ffffff", // ✅ Fixes "No options" text color
-                              backgroundColor: "#101828", // match dropdown
-                            },
-                          },
-                        },
-                      }}
-                      sx={{
-                        "& .MuiAutocomplete-tag": {
-                          backgroundColor: "#4f39f6e0",
-                          color: "#ffffff",
-                        },
-                        "& .MuiSvgIcon-root": {
-                          color: "#ffffff",
-                        },
-                      }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -488,6 +474,39 @@ export default function Home() {
                           }}
                         />
                       )}
+                      slotProps={{
+                        paper: {
+                          sx: {
+                            backgroundColor: "#101828",
+                            color: "#ffffff",
+                            boxShadow:
+                              "0px 4px 12px rgba(0, 0, 0, 0.5)",
+                            "& .MuiAutocomplete-option": {
+                              color: "#ffffff",
+                              '&[aria-selected="true"]': {
+                                backgroundColor:
+                                  "#4f39f6e0",
+                              },
+                              "&:hover": {
+                                backgroundColor: "#303F9F",
+                              },
+                            },
+                            "& .MuiListSubheader-root": {
+                              color: "#ffffff",
+                              backgroundColor: "#101828",
+                            },
+                          },
+                        },
+                      }}
+                      sx={{
+                        "& .MuiAutocomplete-tag": {
+                          backgroundColor: "#4f39f6e0",
+                          color: "#ffffff",
+                        },
+                        "& .MuiSvgIcon-root": {
+                          color: "#ffffff",
+                        },
+                      }}
                     />
                   </DialogContent>
 
