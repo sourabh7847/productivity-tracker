@@ -164,16 +164,11 @@ export default function Home() {
 
   const [habitsAsOptions, setHabitsAsOptions] =
     useState<any>([]);
+
   useEffect(() => {
     localStorage.setItem("habits", JSON.stringify(habits));
-    let options = habits.map((item) => {
-      return {
-        id: item.id,
-        name: item.name,
-      };
-    });
 
-    setHabitsAsOptions(options);
+    setHabitsAsOptions(habits);
   }, [habits]);
 
   const [open, setOpen] = useState(false);
@@ -186,6 +181,14 @@ export default function Home() {
     setOpen(false);
   };
 
+  const onSaveNewRoutine = () => {
+    let newRoutine = { ...routine };
+    newRoutine.id = generateId();
+    newRoutine.createdAt = new Date().toISOString();
+    newRoutine.habits = selectedHabits;
+    setRoutines([...routines, newRoutine]);
+  };
+  console.log(routines);
   return (
     <>
       <Layout>
@@ -354,9 +357,14 @@ export default function Home() {
           </Card>
           <Card>
             <div className="flex flex-row justify-between">
-              <div className=" flex  ">
-                <p className={`${cardHeader}`}>Routines</p>
+              <div>
+                <div className=" flex  ">
+                  <p className={`${cardHeader}`}>
+                    Routines
+                  </p>
+                </div>
               </div>
+
               <div>
                 <div
                   className="px-3 py-1.5 rounded-lg bg-indigo-900/60 text-indigo-300 cursor-pointer shadow-lg"
@@ -384,7 +392,7 @@ export default function Home() {
                       const formJson = Object.fromEntries(
                         formData.entries()
                       );
-                      console.log(formJson);
+                      // console.log(formJson);
                       handleClose();
                     },
                   }}
@@ -403,6 +411,13 @@ export default function Home() {
                       fullWidth
                       variant="standard"
                       sx={{ marginBottom: 2 }}
+                      onChange={(e) => {
+                        setRoutine({
+                          ...routine,
+                          name: e.target.value,
+                        });
+                        // console.log(routine);
+                      }}
                       InputProps={{
                         style: { color: "#ffffff" },
                         disableUnderline: false,
@@ -517,13 +532,51 @@ export default function Home() {
                     >
                       Cancel
                     </Button>
-                    <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 h-[40px] w-[70px] rounded-lg">
+                    <button
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 h-[40px] w-[70px] rounded-lg"
+                      onClick={onSaveNewRoutine}
+                    >
                       Save
                     </button>
                   </DialogActions>
                 </Dialog>
               </div>
             </div>
+            {routines.map((routine) => {
+              return (
+                <div>
+                  <p>{routine.name}</p>
+                  {routine.habits.map((habit) => {
+                    return (
+                      <div className="flex w-full p-2 rounded-lg hover:bg-gray-900 transition-colors">
+                        <div className="flex flex-1 items-center">
+                          <button
+                            className={` flex items-center justify-center w-5 h-5 mr-3 rounded-full cursor-pointer ${
+                              habit.completed
+                                ? "bg-indigo-600 border-2"
+                                : "border"
+                            }`}
+                          >
+                            {habit.completed ? (
+                              <Check size={12} />
+                            ) : null}
+                          </button>
+                          <label
+                            className={` text-gray-200 text-lg ${
+                              habit.completed
+                                ? "line-through"
+                                : " "
+                            }`}
+                          >
+                            {habit.name}
+                          </label>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </Card>
         </div>
       </Layout>
